@@ -1,90 +1,76 @@
-public class UseCase1HotelBookingApp {
+import java.util.HashMap;
+import java.util.Map;
 
-    public static void main(String[] args) {
+// Room class to store room details
+class Room {
+    int beds;
+    int size;
+    double price;
+    int availability;
 
-        System.out.println("===================================");
-        System.out.println("Welcome to Book My Stay App");
-        System.out.println("Hotel Booking System v1.0");
-        System.out.println("===================================");
-
+    public Room(int beds, int size, double price, int availability) {
+        this.beds = beds;
+        this.size = size;
+        this.price = price;
+        this.availability = availability;
     }
 }
 
-public class HotelBookingApp implements Serializable {
+public class  HotelBookingApp {
 
-    private HashMap<String, Integer> inventory;
-    private List<Reservation> bookingHistory;
-
-    private static final String FILE_NAME = "hotel_data.ser";
+    // Centralized inventory
+    private HashMap<String, Room> inventory;
 
     // Constructor
-    public HotelBookingApp() {
+    public  HotelBookingApp() {
         inventory = new HashMap<>();
-        bookingHistory = new ArrayList<>();
     }
 
-    // Add data
-    public void addRoomType(String type, int count) {
-        inventory.put(type, count);
+    // Add room type
+    public void addRoom(String type, int beds, int size, double price, int availability) {
+        inventory.put(type, new Room(beds, size, price, availability));
     }
 
-    public void addBooking(String guestName, String roomId) {
-        bookingHistory.add(new Reservation(guestName, roomId));
-    }
-
-    // Save data (Serialization)
-    public void saveData() {
-        try {
-            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_NAME));
-            oos.writeObject(this);
-            oos.close();
-            System.out.println("Data saved successfully.");
-        } catch (Exception e) {
-            System.out.println("Error saving data.");
+    // Update availability
+    public void updateAvailability(String type, int change) {
+        Room room = inventory.get(type);
+        if (room != null) {
+            if (room.availability + change < 0) {
+                System.out.println("Not enough rooms available for " + type);
+            } else {
+                room.availability += change;
+            }
         }
     }
 
-    // Load data (Deserialization)
-    public static HotelBookingApp loadData() {
-        try {
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_NAME));
-            HotelBookingApp app = (HotelBookingApp) ois.readObject();
-            ois.close();
-            System.out.println("Data loaded successfully.");
-            return app;
-        } catch (Exception e) {
-            System.out.println("No previous data found. Starting fresh.");
-            return new HotelBookingApp();
-        }
-    }
+    // Display inventory
+    public void displayInventory() {
+        System.out.println("Hotel Room Inventory Status\n");
 
-    // Display data
-    public void displayData() {
-        System.out.println("\nInventory:");
-        for (String type : inventory.keySet()) {
-            System.out.println(type + " -> " + inventory.get(type));
-        }
+        for (Map.Entry<String, Room> entry : inventory.entrySet()) {
+            String type = entry.getKey();
+            Room r = entry.getValue();
 
-        System.out.println("\nBooking History:");
-        for (Reservation r : bookingHistory) {
-            System.out.println("Guest: " + r.guestName + ", Room ID: " + r.roomId);
+            System.out.println(type + " Room:");
+            System.out.println("Beds: " + r.beds);
+            System.out.println("Size: " + r.size + " sqft");
+            System.out.println("Price per night: " + r.price);
+            System.out.println("Available Rooms: " + r.availability);
+            System.out.println();
         }
     }
 
     // Main method
     public static void main(String[] args) {
 
-        // Load previous data
-        HotelBookingApp app = HotelBookingApp.loadData();
+        HotelBookingApp system = new HotelBookingApp();
 
-        // Add sample data
-        app.addRoomType("Single", 2);
-        app.addBooking("Abhi", "Single-1");
+        // Add rooms
+        system.addRoom("Single", 1, 250, 1500.0, 5);
+        system.addRoom("Double", 2, 400, 2500.0, 3);
+        system.addRoom("Suite", 3, 750, 5000.0, 2);
 
-        // Display current state
-        app.displayData();
-
-        // Save before exit
-        app.saveData();
+        // Display inventory
+        system.displayInventory();
     }
 }
