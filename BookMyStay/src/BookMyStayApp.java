@@ -1,14 +1,12 @@
-import java.io.*;
-import java.util.*;
+public class UseCase1HotelBookingApp {
 
-// Reservation class (Serializable)
-class Reservation implements Serializable {
-    String guestName;
-    String roomId;
+    public static void main(String[] args) {
 
-    public Reservation(String guestName, String roomId) {
-        this.guestName = guestName;
-        this.roomId = roomId;
+        System.out.println("===================================");
+        System.out.println("Welcome to Book My Stay App");
+        System.out.println("Hotel Booking System v1.0");
+        System.out.println("===================================");
+
     }
 }
 
